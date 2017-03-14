@@ -1,0 +1,31 @@
+<div class="account" style="width:50vw; display:flex;flex-direction: row;">
+    <div style="width:90%;"  onclick="clicked(this)">
+        <div class="accountId" address="{{account.email}}">
+            Email - {{ account.email }}
+
+            
+        </div>
+        <div>
+            list current notifications
+        </div>
+        <i class="fa fa-angle-down" aria-hidden="true" style="text-align: center;"></i>
+        <div class="accountDetails" style="display:none">
+            
+            
+            {% if account.notifications %}
+                {% for notification in account.notifications %}
+                    <p>{{notification.name}}
+                    {% if notification.disabledNotification == True %}
+                        <span>- Disabled</span>
+                    {% endif %}
+                    </p>
+                {% endfor %}
+            {% else %}
+                <p>currently no notifications</p>
+            {% endif%}
+        </div>
+    </div>
+    <div class="deleteButton">
+        <i class="fa fa-trash-o" aria-hidden="true" style="float:right"></i>
+    </div>
+</div>

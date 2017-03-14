@@ -1,0 +1,68 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>sound-rebound configuration</title>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='./css/font-awesome.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='./css/style.css') }}">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+
+
+</head>
+<body>
+	<header id="header">sound-rebound</header>
+
+	<div id="bodyContent">
+		<div id="notifications">
+			
+		</div>
+		{% include 'form.html'%}
+	</div>
+
+	{% if error %}
+      <h1>{{error}}</h1>
+    {% endif %}
+
+	<button class="button" id="addAccount">add a account</button>
+
+
+<script src="{{ url_for('static',filename='./javascript/javascript.js') }}"></script>
+<script src="{{ url_for('static',filename='./javascript/javascript2.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	var socket = io.connect('http://127.0.0.1:{{port}}');
+	socket.on('connect', function() {
+		socket.send('User has connected!');
+	});
+
+	socket.on("allAccounts",function(accountsData){
+		accounts = accountsData['data'];
+		$("#notifications").html("")
+		
+		for(var i = 0; i < accounts.length; i++){
+			notifications = crateNotificationList(accounts[i].notifications);
+			account = createAccountHTML(accounts[i].email,notifications);
+			$("#notifications").append(account)
+		}
+
+
+		$('.deleteButton').on('click', function() {
+			email = $(this).parent().find(".accountId").attr('address')
+			socket.emit("remove_account",{"emailAddress": email});
+		});
+	})
+
+	$( "#form" ).submit(function( event ) {
+		accountEmail = $("#accountEmail").val();
+		accountPassword = $("#password").val();
+		socket.emit("add_account",{"emailAddress": accountEmail, "password":accountPassword});
+		hideForm()
+		event.preventDefault();
+	});
+	
+});
+</script>
+
+</body>
+</html>

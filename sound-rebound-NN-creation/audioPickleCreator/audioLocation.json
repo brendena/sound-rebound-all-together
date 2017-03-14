@@ -1,0 +1,17 @@
+	 
+{
+    "labelLocation":{
+        "babyCrying": 1,
+        "babyLaughing": 2,
+        "fingerSnapping": 3,
+	    "fireAlarm": 4
+    },
+    "fileLocations":[
+	    ["babyCrying3", "https://www.youtube.com/watch?v=uXATjvr_rl4"],
+        ["fingerSnapping", "https://www.youtube.com/watch?v=lmSmwPsWvII"],
+        ["babyCrying", "https://www.youtube.com/watch?v=qS7nqwGt4-I"],
+        ["babyCrying2", "https://www.youtube.com/watch?v=NjkNNDuAb9A"],
+        ["babyLaughing", "https://www.youtube.com/watch?v=j5-6bI3hR2M"],
+	    ["fireAlarm", "https://www.youtube.com/results?search_query=smoke+alarm+sound"]
+    ]
+}

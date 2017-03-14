@@ -1,0 +1,79 @@
+body{
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  margin:0;
+}
+#header{
+    text-align:center;
+    height:30px;
+    background: lightblue;
+}
+#footer{
+    text-align:center;
+    height:30px;
+    background: lightblue;
+}
+
+#bodyContent{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    flex-direction: column; 
+}
+
+.account{
+    min-width:300px;
+    width: 60vw;
+    max-width:500px;
+    padding:10px;
+    margin:10px;
+    background:deepskyblue;
+    border-radius: 10px;
+    text-align: center;
+}
+@media (max-width: 500px) {
+    .account{
+        width:100vw;
+        border-radius: 0;
+        padding-left:0px;
+        padding-right:0px;
+        margin-left:0px;
+        margin-right:0px;
+    }
+
+    .accountDetails{
+    border-radius: 0;
+    background:lightskyblue;
+}
+}
+.accountDetails{
+    border-radius: 10px;
+    background:lightskyblue;
+}
+.button {
+    background-color: #7aeeb4; /* Green */
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+}
+
+.accountName{
+
+}
+.accountId{
+   
+}
+
+.deleteButton{
+    display:flex;
+    width:100%;
+    max-width:30px;
+    justify-content:center;
+    align-items: center;
+}

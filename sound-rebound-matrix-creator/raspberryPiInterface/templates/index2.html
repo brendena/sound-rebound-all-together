@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- HTML5 Hello world by kirupa - http://www.kirupa.com/html5/getting_your_feet_wet_html5_pg1.htm -->
+<html lang="en-us">
+
+<head>
+<meta charset="utf-8">
+<title>sound-rebound configuration</title>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='./css/font-awesome.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='./css/style.css') }}">
+
+</head>
+
+<body>
+
+<header id="header">sound-rebound</header>
+
+  <div id="bodyContent">
+
+    {% if accounts %}
+      {% for account in accounts %}
+        {% include 'accounts.html'%}
+      {% endfor %}
+    {% endif %}
+
+    {% if error %}
+      <h1>{{error}}</h1>
+    {% endif %}
+
+    
+    {% include 'form.html'%}
+  </div>
+  <button class="button" id="addAccount">add a account</button>
+<!--
+<footer id="footer">footer</footer>
+-->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{{ url_for('static',filename='./javascript/javascript.js') }}"></script>
+<!--
+  
+{% if name %}
+    <audio id="audio" src="./static/audio/{{name}}.wav" preload="auto"></audio>
+
+{% else %}
+  <h1>There was a problem</h1>
+{% endif %}
+
+
+
+
+
+-->
+</body>
+</html>

@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/brendena/Documents/tensorflow/gitUpload/NeuralNetwork/my_model.model"
+all_model_checkpoint_paths: "/home/brendena/Documents/tensorflow/gitUpload/NeuralNetwork/my_model.model"

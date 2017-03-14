@@ -1,0 +1,15 @@
+*.pyc
+*.mp3
+*.wav
+*.ipynb
+*.pickle
+*.swp
+test.pickle
+./sound-rebound-NN-creation/audioPickleCreator/*.pyc
+./sound-rebound-NN-creation/audioPickleCreator/*.mp3
+./sound-rebound-NN-creation/audioPickleCreator/*.wav
+./sound-rebound-NN-creation/audioPickleCreator/*.pickle
+./sound-rebound-NN-creation/NeuralNetwork/*.pyc
+./sound-rebound-NN-creation/NeuralNetwork/*.pickle
+./sound-rebound-NN-creation/NeuralNetwork/*model*
+./sound-rebound-matrix-creator/micarray/build
