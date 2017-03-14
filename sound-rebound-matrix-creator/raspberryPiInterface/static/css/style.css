@@ -5,10 +5,17 @@ body{
   margin:0;
 }
 #header{
-    text-align:center;
-    height:30px;
-    background: lightblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:10vh;
+    min-height: 50px;
+    max-height: 150px;
+    background: hsla(340, 100%, 63%, 0.8);
+    font-size:5vh;
 }
+
+
 #footer{
     text-align:center;
     height:30px;
@@ -20,7 +27,8 @@ body{
     align-items: center;
     justify-content: center;
     flex: 1;
-    flex-direction: column; 
+    flex-direction: column;
+    background-color:#f9ffe6;
 }
 
 .account{
@@ -46,14 +54,24 @@ body{
     .accountDetails{
     border-radius: 0;
     background:lightskyblue;
+    }
 }
+@media (max-height: 400px) {
+    #header{
+        font-size: 20px
+    }
+}
+@media (min-height: 1000px) {
+    #header{
+        font-size: 50px
+    }
 }
 .accountDetails{
     border-radius: 10px;
     background:lightskyblue;
 }
 .button {
-    background-color: #7aeeb4; /* Green */
+    background-color: #7adeee;; /* Green */
     border: none;
     color: black;
     padding: 15px 32px;
@@ -63,12 +81,6 @@ body{
     font-size: 24px;
 }
 
-.accountName{
-
-}
-.accountId{
-   
-}
 
 .deleteButton{
     display:flex;

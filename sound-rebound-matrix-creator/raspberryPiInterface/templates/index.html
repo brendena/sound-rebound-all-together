@@ -8,10 +8,15 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
 
-
 </head>
 <body>
-	<header id="header">sound-rebound</header>
+	<header id="header">
+		<img src="{{ url_for('static',filename='./images/logo.png') }}" 
+			 style="height:100%" alt="sound-rebound logo">
+		<p>
+			sound-rebound
+		</p>
+	</header>
 
 	<div id="bodyContent">
 		<div id="notifications">
@@ -35,24 +40,44 @@ $(document).ready(function() {
 	socket.on('connect', function() {
 		socket.send('User has connected!');
 	});
-
+	/*///////////////////////////////////////////////////
+	/	on event `allAccounts` add all notification
+	/	to  $("#notifications")
+	///////////////////////////////////////////////////*/
 	socket.on("allAccounts",function(accountsData){
+		/*///////////////////////////////////////////////////
+		/	get the data and clear
+		/	all the notifiacation in $("#notifications")
+		/	with .html("")
+		///////////////////////////////////////////////////*/
 		accounts = accountsData['data'];
 		$("#notifications").html("")
-		
+
+		/*///////////////////////////////////////////////////
+		/	loop through each account and for each account.
+		/	create a the html for the account bubble and
+		/	append it to $("#notifications")
+		///////////////////////////////////////////////////*/
 		for(var i = 0; i < accounts.length; i++){
 			notifications = crateNotificationList(accounts[i].notifications);
 			account = createAccountHTML(accounts[i].email,notifications);
 			$("#notifications").append(account)
 		}
 
-
+		/*///////////////////////////////////////////////////
+		/	add click event handlers to '.deleteButton',
+		/  	so you can remove a account.
+		///////////////////////////////////////////////////*/
 		$('.deleteButton').on('click', function() {
 			email = $(this).parent().find(".accountId").attr('address')
 			socket.emit("remove_account",{"emailAddress": email});
 		});
 	})
-
+	/*///////////////////////////////////////////////////
+	/	when the form is submitted, get
+	/	the information and send it in  a socket,
+	/	and prevent it from refreshing.
+	///////////////////////////////////////////////////*/
 	$( "#form" ).submit(function( event ) {
 		accountEmail = $("#accountEmail").val();
 		accountPassword = $("#password").val();
