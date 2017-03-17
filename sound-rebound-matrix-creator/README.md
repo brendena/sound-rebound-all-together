@@ -17,7 +17,13 @@ sudo bash ./make.sh
 
 ## sync data
 
-rsync -avz -e ssh username@10.42.0.1:/home/brendena/Downloads/syncRPI ~/Downloads/syncRPI
+`rsync -avz -e ssh username@10.42.0.1:/home/brendena/Downloads/syncRPI ~/Downloads/syncRPI`
+
+## if audio sounds bad 
+
+`sudo killall malos`
+
+malos also uses SPI bus, so you have to stop it before you can get clean audio.
 
 ## include c++ library
 [Libmfcc](https://github.com/wirahayy/libmfcc)

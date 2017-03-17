@@ -12,7 +12,7 @@ from CI_RNNBasic import MusicData
 musicData = MusicData()
 
 print(musicData.myShape)
-
+'''
 
 net = tflearn.input_data(shape=musicData.myShape)
 #net = tflearn.embedding(net, input_dim=200, output_dim=128)
@@ -33,3 +33,4 @@ snapshot_step=100)
 model.save('my_model.model')
 
 #technically works
+'''

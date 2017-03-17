@@ -1,5 +1,5 @@
 import pickle
-from firebase import myFirebase
+from raspberryPiInterface.firebase import myFirebase
 import time
 
 class flaskFirebase:  
@@ -64,9 +64,9 @@ class flaskFirebase:
         error = "no error"
         if(ifPass != 0):
             data = self.loadAccountInfo()
-            print("\n\nthis is data\n")
-            print(data)
-            print(account)
+            #print("\n\nthis is data\n")
+            #print(data)
+            #print(account)
             if (account in data):
                 error = "alread here \n"
             else:
@@ -78,8 +78,8 @@ class flaskFirebase:
         else:
             error = "error\n"
 
-        print(error)
-        print(ifPass)
+        #print(error)
+        #print(ifPass)
         
         return error 
     
@@ -95,13 +95,13 @@ class flaskFirebase:
         
     '''
     def getFlasksAccountInfo(self):
-        print("looping through everthing")
+        #print("looping through everthing")
         returnArray = []
         
         for i in self.myFirebase.allUsersData:
             listNotification = []
-            print(self.myFirebase.allUsersData)
-            print("\n\n")
+            #print(self.myFirebase.allUsersData)
+            #print("\n\n")
             #'''
             if self.myFirebase.allUsersData[i] is not None:
                 for j in self.myFirebase.allUsersData[i]:
@@ -114,6 +114,14 @@ class flaskFirebase:
                 "email": i,
                 "notifications": listNotification
             })
-            #'''    
+            #'''
+        print("\n\n\n")
+        print(returnArray)
+        print("\n\n\n")
+
+        print("\n\n\n")
+        print(self.myFirebase.allUsersData)
+        print("\n\n\n")    
+
         return returnArray
 

@@ -11,16 +11,16 @@ class producer(multiprocessing.Process):
     def run(self) :
 
         while(True):
-            
-            for i in range(2):
-                print ("micArray_demp " + str(i))
+            numberOfSeconds = 1
+            for itteration in range(10):
+                print ("micArray_demp " + str(itteration))
                 if(self.queueGetNotificationColor.empty()):
                     process = subprocess.Popen(
-                        ['./micarray/build/micarray_dump', "12", "15", "40"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        ['./micarray/build/micarray_dump',str(itteration), str(numberOfSeconds), "0", "0", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 else:
                     noifColor = self.queueGetNotificationColor.get()
                     process = subprocess.Popen(
-                        ['./micarray/build/micarray_dump', noifColor["red"], noifColor["blue"], noifColor["green"]], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        ['./micarray/build/micarray_dump', str(itteration), str(numberOfSeconds), noifColor["red"], noifColor["blue"], noifColor["green"]], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 audio, err = process.communicate()
                 
                 '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,10 +28,9 @@ class producer(multiprocessing.Process):
                 / values to a list of mfcc values
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
 
-
+                
                 #print(audio)
                 #convert = audio.decode("utf-8") 
                 #convert = eval(''.join(['[',   convert, ']']))
-
                 self.queueSetAudio.put(audio)
             break;

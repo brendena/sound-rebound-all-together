@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 import pickle
 
 
@@ -17,7 +17,13 @@ def to1hot(row):
 class MusicData:
 	def __init__(self):
 
-		data = pickle.load( open( "./audioForNeuralNetwork.pickle", "rb" ) )
+		#data = pickle.load( open( "./audioForNeuralNetwork.pickle", "rb" ) )
+		dataPickle = pickle.load( open( "./test.pickle", "rb" ) )
+
+		data = pd.DataFrame({
+			'mfcc': dataPickle['mfcc'],
+			'target': dataPickle['target']
+		})
 
 		data["one_hot_encoding"] = data.target.apply(to1hot)
 

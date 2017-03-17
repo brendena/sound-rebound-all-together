@@ -1,8 +1,8 @@
 import pyrebase
-import requests
+#import requests
 import sys
 import time
-from myAuth import  config
+from raspberryPiInterface.myAuth import  config
 
 class myFirebase:
     '''
@@ -25,6 +25,7 @@ class myFirebase:
 
         
         self.allUsersData = {}
+        self.allTokenData = {}
 
 
     '''
@@ -44,8 +45,8 @@ class myFirebase:
             return localId, user['idToken']
         
         #bad password, or bad log in.    
-        except requests.exceptions.HTTPError as e:
-            print(e)
+        #except requests.exceptions.HTTPError as e:
+        #    print(e)
             
         except:
             e = sys.exc_info()
@@ -62,7 +63,7 @@ class myFirebase:
     '''
     def streamHandler(self,message):
         print("got a update")
-        print("steam_id: " + str(message["stream_id"]))
+        #print("steam_id: " + str(message["stream_id"]))
         
         SID = message['stream_id']
         
@@ -95,6 +96,17 @@ class myFirebase:
     def setUpStream(self,userId,userToken, email):
         self.Streams[email] = self.db.child("users").child(userId).stream(self.streamHandler, token=userToken, stream_id=email)
     
+    def streamHandlerToken(self,message):
+        print(message)
+        self.allTokenData[message["stream_id"]] = {
+            "token" : message["data"]["token"]
+        }
+        
+        
+
+    def setUpTokenStream(self,userId,userToken, email):
+        self.StreamToken = self.db.child("notification_token").child(userId).stream(self.streamHandlerToken, token=userToken, stream_id=email)
+
     def removeStream(self,email):
         del self.Streams[email]
         del self.allUsersData[email]
@@ -107,19 +119,15 @@ class myFirebase:
         for user in allUsers: 
             #                                    "email", "password
             userId, userToken = self.loginAccount(user,allUsers[user])
-            print(userId)
-            print("!!! this is email !!!")
-            print(user)
             if(userId != 0):            #user is the email
                 self.setUpStream(userId,userToken,user)
+                self.setUpTokenStream(userId,userToken, user)
                 
     def addUserToAccountInfo(self, email,password):
         userId, userToken = self.loginAccount(email,password)
-        print(userId)
-        print("!!! this is email !!!")
-        print(email)
         if(userId != 0):            
             self.setUpStream(userId,userToken,email)
+            self.setUpTokenStream(userId, userToken, email)
     
 
         

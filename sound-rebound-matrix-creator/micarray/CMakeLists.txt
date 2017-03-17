@@ -5,11 +5,9 @@ add_definitions(-std=c++11)
 
 find_package(Threads)
 
-add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/libmfcc)
 
 add_executable(micarray_dump micarray_dump.cpp)
 set_property(TARGET micarray_dump PROPERTY CXX_STANDARD 11)
 target_link_libraries(micarray_dump matrix_creator_hal)
 target_link_libraries(micarray_dump ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(micarray_dump wiringPi)
-target_link_libraries(micarray_dump libmfcc)

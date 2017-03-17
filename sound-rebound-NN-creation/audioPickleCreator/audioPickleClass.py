@@ -128,6 +128,7 @@ class audioPickleClass:
 			ySample = y0[start: end]
 			#data = ySample
 			mfccs = librosa.feature.mfcc(y=ySample, sr=sr0,hop_length=hopLength,n_mfcc=20)
+			mfccs = librosa.feature.mfcc(y=ySample, sr=sr0,hop_length=hopLength,n_mfcc=20)
 			melSpec  = librosa.feature.melspectrogram(y=ySample, sr=sr0,hop_length=hopLength,n_mels=128)
 			rms = librosa.feature.rmse(y=ySample,hop_length=hopLength)
 			zcr = librosa.feature.zero_crossing_rate(y=ySample,hop_length=hopLength)
