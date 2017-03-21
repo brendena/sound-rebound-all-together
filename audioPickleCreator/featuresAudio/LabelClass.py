@@ -18,7 +18,7 @@ class LabelClass:
 	#   label for it. 
 	'''%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'''
 	def _getLabelLocations(self):
-		labelLocationFile =  "audioLocation.json"
+		labelLocationFile =  "./audioLocation.json"
 
 		data = []
 		with open(labelLocationFile) as f:
@@ -28,7 +28,7 @@ class LabelClass:
 
 
 	def getCurrentDirectory(self):
-		return os.path.dirname(os.path.abspath(__file__))
+		return os.path.dirname(os.path.abspath(__file__))  + "/.."
 
 
 	'''%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'''

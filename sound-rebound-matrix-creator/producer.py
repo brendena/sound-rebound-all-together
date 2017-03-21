@@ -12,8 +12,8 @@ class producer(multiprocessing.Process):
 
         while(True):
             numberOfSeconds = 1
-            for itteration in range(10):
-                print ("micArray_demp " + str(itteration))
+            for itteration in range(1):
+                #print ("micArray_demp " + str(itteration))
                 if(self.queueGetNotificationColor.empty()):
                     process = subprocess.Popen(
                         ['./micarray/build/micarray_dump',str(itteration), str(numberOfSeconds), "0", "0", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)

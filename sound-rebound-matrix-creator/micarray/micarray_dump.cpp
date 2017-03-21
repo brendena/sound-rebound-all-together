@@ -52,13 +52,16 @@ int main(int argc, char *argv[]) {
   everloop.Write(&image1d);
 
 
-
-  //uint16_t seconds_to_record = 10;
-
   int16_t buffer[mics.Channels() + 1][seconds_to_record * mics.SamplingRate()];
 
   mics.CalculateDelays(0, 0, 1000, 320 * 1000);
-
+  /*////////////////////////////////////////////
+  / About setGain
+  / http://community.matrix.one/t/low-energy-on-array-microphones/281/8
+  /
+  / https://github.com/matrix-io/matrix-creator-hal/blob/master/cpp/driver/microphone_array.h#L41
+  ////////////////////////////////////////////*/
+  mics.SetGain((int16_t) 8);
   uint32_t step = 0;
   while (true) {
     mics.Read(); /* Reading 8-mics buffer from de FPGA */

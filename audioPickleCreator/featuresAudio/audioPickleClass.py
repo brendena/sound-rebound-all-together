@@ -2,16 +2,10 @@ import librosa
 import pickle
 from random import shuffle
 import pandas as pd
-import LabelClass
+from featuresAudio.LabelClass import LabelClass 
+import numpy as np
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-#
-#
-#
-#
-#
-#
-#
 #  Globals
 #		- listAudioObject:
 #			A audio Object is all the MFCC values,  
@@ -27,16 +21,19 @@ import LabelClass
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class audioPickleClass:
-
-	def __init__(self,numberFramePerSection=1,hopLengthPerSecond=16):
+	def __init__(self,numHopLengthPerFrame=1,hopLengthPerSecond=1):
 		self.listAudioObject = []
 		'''%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'''
 		#   It works because of
 		#	http://stackoverflow.com/questions/5514573/python-error-typeerror-module-object-is-not-callable-for-headfirst-python-co
 		'''%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'''
-		self.labelClass = LabelClass.LabelClass()
+		self.labelClass = LabelClass()
 		self.labelLocations = self.labelClass._getLabelLocations()
-		self.numberFramePerSection = numberFramePerSection
+		self.numHopLengthPerFrame = numHopLengthPerFrame
+		self.hopLengthPerSecond = hopLengthPerSecond
+
+	def set_HopLength_FrameLength(self, numHopLengthPerFrame=1,hopLengthPerSecond=1):
+		self.numHopLengthPerFrame = numHopLengthPerFrame
 		self.hopLengthPerSecond = hopLengthPerSecond
 	
 
@@ -47,7 +44,7 @@ class audioPickleClass:
 	#   labels you want to add to listAudioObject.  for pickle
 	#   latter on.
 	'''%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'''
-	def addLabels(self,labels=[]):
+	def addLabelsToClassify(self,labels=[]):
 		fileLocationsWithLabels = self.labelClass.getListAudioFileWithLabels()
 		if(len(labels) != 0 ):
 			for label in range(len(fileLocationsWithLabels)-1,-1,-1):
@@ -93,27 +90,24 @@ class audioPickleClass:
 
 	def addMusic(self,audioFile, labelsArray, target):
 		#limit = 100 , duration=limit
-		y0, sr0 = librosa.core.load(audioFile,44100, mono=True)#converts to singal to mono
+		y0, sr0 = librosa.core.load(audioFile,16000, mono=True)#converts to singal to mono
 
 
 		'''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		/	Section - is the data point
-		/	
 		/	Frame - is the amount of 
 		/				hopLenght you want to take
 		/
 		/	hopLength - is the length of 
 		/					time for each mesurment.
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
-		numberFramePerSection = self.numberFramePerSection
-		hopLength = (int(44100/self.hopLengthPerSecond))
+		hopLength = (int(sr0/self.hopLengthPerSecond))
 		print(len(y0))
 		print(len(y0)/ sr0)
 		for label in labelsArray:
 
 			#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			#labels can be less then zero which will break
-			# this program.this forces it to be at least zero
+			#	labels can be less then zero which will break
+			# 	this program.this forces it to be at least zero
 			#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			if(label[0] < 0):
 				label[0] = 0
@@ -126,7 +120,6 @@ class audioPickleClass:
 
 			
 			ySample = y0[start: end]
-			#data = ySample
 			mfccs = librosa.feature.mfcc(y=ySample, sr=sr0,hop_length=hopLength,n_mfcc=20)
 			mfccs = librosa.feature.mfcc(y=ySample, sr=sr0,hop_length=hopLength,n_mfcc=20)
 			melSpec  = librosa.feature.melspectrogram(y=ySample, sr=sr0,hop_length=hopLength,n_mels=128)
@@ -135,18 +128,23 @@ class audioPickleClass:
 
 			
 			'''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			/	numberSections forces it to only chuck up the data
+			/	numberFrames forces it to only chuck up the data
 			/	to the point where you have a full set.  that 
 			/   whats what the int() for.
 			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
-			numberSections = int(len(mfccs[0]) / numberFramePerSection)
+			print()
+			numberFrames = int(len(mfccs[0]) / self.numHopLengthPerFrame)
+			#print()
+			print(int(len(mfccs[0])))
+			print(str(numberFrames))
+			print("\n\n")
 
-			mfccs = self.segmentData3d(mfccs,numberFramePerSection,numberSections)
-			melSpec = self.segmentData3d(melSpec,numberFramePerSection,numberSections)
-			rms = self.segmentData3d(rms,numberFramePerSection,numberSections)
-			zcr = self.segmentData3d(zcr,numberFramePerSection,numberSections)
+			mfccs = self.segmentData3d(mfccs,numberFrames)
+			melSpec = self.segmentData3d(melSpec,numberFrames)
+			rms = self.segmentData3d(rms,numberFrames)
+			zcr = self.segmentData3d(zcr,numberFrames)
 			
-			for i in range(0, numberSections):
+			for i in range(0, numberFrames - 1):
 				#'''
 				data= []
 				self.listAudioObject.append({
@@ -171,31 +169,24 @@ class audioPickleClass:
 	/	3d array
 	/	allData[numberSections] = 
 	/					mfccs[numberOfMFCCS] = 
-	/							array[hopLength * numberFramePerSection]
+	/							array[hopLength * numHopLengthPerFrame]
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
-	def segmentData3d(self,data,numberFramePerSection,numberSections):
+	def segmentData3d(self,data,numberFrames):
 		allData = []
-		for sectionNum in range(0,numberSections):
+		for sectionNum in range(0,numberFrames):
 				newArray = []
 				for frame in data:
-					currentFrameNumber = sectionNum*numberFramePerSection
-					newArray.append((list(frame[currentFrameNumber:(sectionNum+1)*numberFramePerSection])))
+					currentFrameNumber = sectionNum*self.numHopLengthPerFrame
+					newArray.extend((list(frame[currentFrameNumber:(sectionNum+1)*self.numHopLengthPerFrame])))
 				allData.append(newArray)
-		#print(len(allData))
 		return allData
 
-	def segmentData2d(self,data, numberFramePerSection,numberSections):
-		allData = []
-		for sectionNum in range(0,numberSections):
-			allData.append(list(data[sectionNum*numberFramePerSection:(sectionNum+1)*numberFramePerSection]))
-
-		#print(len(allData))
-		return allData
 
 	def shuffle(self):
 		shuffle(self.listAudioObject)
 
 	def createPickle(self, FilePickle):
+		self.shuffle()
 		tmpArray = {
 			'mfcc' : [],
 			'mel': [],
