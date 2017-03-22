@@ -132,19 +132,20 @@ class audioPickleClass:
 			/	to the point where you have a full set.  that 
 			/   whats what the int() for.
 			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
-			print()
 			numberFrames = int(len(mfccs[0]) / self.numHopLengthPerFrame)
+
 			#print()
-			print(int(len(mfccs[0])))
-			print(str(numberFrames))
-			print("\n\n")
+			#print(int(len(mfccs[0])))
+			#print(str(numberFrames))
+			#print("\n\n")
 
 			mfccs = self.segmentData3d(mfccs,numberFrames)
 			melSpec = self.segmentData3d(melSpec,numberFrames)
 			rms = self.segmentData3d(rms,numberFrames)
 			zcr = self.segmentData3d(zcr,numberFrames)
-			
-			for i in range(0, numberFrames - 1):
+			#hack
+			#for i in range(0, numberFrames - 1):
+			for i in range(0, numberFrames):
 				#'''
 				data= []
 				self.listAudioObject.append({

@@ -27,7 +27,7 @@ class consumer(multiprocessing.Process):
     def run(self):
         self.count= 0           
         while True:
-            time.sleep(12)
+            time.sleep(1.2)
             #print(self.managedDict)
             if (self.queueGetAudio.empty()):
                 print("the queue is empty")
@@ -42,7 +42,6 @@ class consumer(multiprocessing.Process):
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
                 #"sox -r 16000 -c 1 -e signed  -b 16 " + file + " " + output
                 inputFile = item.decode("utf-8") 
-                print("output")
                 output = './recording.wav'
                 #https://github.com/matrix-io/matrix-creator-quickstart/wiki/Microphone-Array-Recording-Test
                 subprocess.call(["sox","-r","16000", "-c","1","-e","signed","-b","16",inputFile,output])
@@ -56,21 +55,31 @@ class consumer(multiprocessing.Process):
                 hopLength = (int(16000/16))
                 zcr = librosa.feature.zero_crossing_rate(y=data,hop_length=hopLength)
 
-                #self.queueSetNotificationColor.put({'red': "34",'blue':"14", 'green':"5"})
+                
 
 
                 final = []
-                print(zcr)
                 for dataPoint in zcr:
                     final.extend((x for x in dataPoint))
                     
-                print("\n\n")
-                print(final) 
                 self.count = self.count + 1
-                asdf = []
-                asdf.extend([x[0] for x in mfccs]) 
-                for svmName in self.svm:
-                    print(self.svm[svmName].predict([final]))
+                mfcc = []
+                mfcc.extend([x[0] for x in mfccs])
+                
+                for i in range(0,len(final),4):
+                    #hack
+                    if(i == 20):
+                        break
+                    for svmName in self.svm:
+                        prediction = self.svm[svmName].predict([final[i:i+4]])
+                        #print(prediction)
+
+                        if(prediction == 1):
+                            prediction = self.classifiers.predict([mfcc])
+                            print("\n predicting mffc values")
+                            print(prediction)
+                            self.queueSetNotificationColor.put({'red': "34",'blue':"14", 'green':"5"})
+                            break
                 
 
 
@@ -79,6 +88,13 @@ class consumer(multiprocessing.Process):
                 
 
     def loadClassifiers(self):
-        data = pickle.load( open( "./classifiers.pickle", "rb" ))
+        data = pickle.load( open( "../audioPickleCreator/pickles/TrainedSVM.pickle", "rb" ))
         self.svm = data['svm']
+
+        #hack
+        
+        
+        data = pickle.load( open( "../audioPickleCreator/pickles/TrainedClassifiers.pickle", "rb" ))
+        self.classifiers = data["Random Forest"]
+
 

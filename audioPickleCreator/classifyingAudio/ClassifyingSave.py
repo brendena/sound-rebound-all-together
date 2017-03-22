@@ -20,15 +20,15 @@ class ClassifyingSave(ClassifyingBase):
         self.clf1 = RandomForestClassifier(n_estimators=122, criterion="gini")
         self.clf1Type = "Random Forest"
         self.clf1.fit(self.X,self.Y)
-
+        '''
         self.clf2 = GaussianNB()
         self.clf2Type = "Naiye Bayes"
         self.clf2.fit(self.X,self.Y)
 
-        feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(self.X)
-        self.clf3 = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, 
-                                                    hidden_units=[20,40,20],
-                                                    n_classes=5, model_dir= self.tfFiles)
+        #feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(self.X)
+        #self.clf3 = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, 
+        #                                            hidden_units=[20,40,20],
+        #                                            n_classes=5, model_dir= self.tfFiles)
         self.clf3Type = "Neural Net"
 
         #currently can't do soft voting for 
@@ -37,12 +37,13 @@ class ClassifyingSave(ClassifyingBase):
         self.eclfSoft = VotingClassifier(estimators=[('rf', self.clf1), ('gnb', self.clf2)], voting='soft')
         self.eclSoftType = "soft voting"
 
-        self.eclfSoft.fit(self.X,self.Y)
-
-
-        #saveClassifiers[self.clf1Type] = self.clf1
-        #saveClassifiers[self.clf2Type] = self.clf2)
-        #pickle.dump(saveClassifiers, open("./pickles/TrainedClassifiers.pickle", "wb"))
+        #self.eclfSoft.fit(self.X,self.Y)
+        '''
+        saveClassifiers = {}
+        saveClassifiers[self.clf1Type] = self.clf1
+        #saveClassifiers[self.clf2Type] = self.clf2
+        pickle.dump(saveClassifiers, open("./pickles/TrainedClassifiers.pickle", "wb"))
+        print("news stuff")
 
     def saveSVM(self):
         saveSVM = {}
