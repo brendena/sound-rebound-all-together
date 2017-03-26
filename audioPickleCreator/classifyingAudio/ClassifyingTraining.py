@@ -7,6 +7,10 @@ from sklearn.grid_search import RandomizedSearchCV
 from sklearn import metrics
 from sklearn import model_selection
 
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import BaggingClassifier
+from sklearn.model_selection import KFold
+
 import numpy as np
 
 #import tensorflow as tf
@@ -36,56 +40,108 @@ class ClassifyingTraining(ClassifyingBase):
 			print(rand.best_params_)
 			print("\n")
 
-	def gridSearchCV_SVM(self):
-		pass
-		'''
-		data = pickle.load( open( "./classifiers.pickle", "rb" ))
-		allData = self.getArrayOfLabelData()
-		for i in data['svm']:
-			print("!!!!!!!!!!!!!!!!!!11")
-			print(i);
 
-		for test in allData:
-			outcome = data['svm'][i].predict(allData[test])
-			print("\n")
-			print("label " + str(test))
-			print("denied " + str(outcome[outcome == -1].size))
-			print("valid " + str(outcome[outcome == 1].size))
-		'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	def bagginSVM(self):
+		'''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		/	http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html#sklearn.model_selection.KFold
+		/	
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
+		kf = KFold(n_splits=50)
+		self.svmList = []
+		arrayLabels = self.getArrayOfLabelData()
+		count = 0
+		#for train_index, test_index in kf.split(arrayLabels["1"]):
+		splitAmount = 10
+		testType = "4"
+		for train_index in range(splitAmount,len(arrayLabels[testType]),splitAmount):
+			X_train = np.array(arrayLabels[testType])[train_index-splitAmount: train_index]
+			clf = OneClassSVM()
+			clf.fit(X_train)
+			string = "clf" + str(count)
+			#self.svmList.append((string, clf))
+			self.svmList.append(clf)
+
+		#eclf = VotingClassifier(estimators=self.svmList, voting='hard')
+		#eclf.predict(arrayLabels["1"])
+		sumList = []
+		for svm in self.svmList:
+			value = svm.predict(arrayLabels["4"])
+			if(sumList == []):
+				sumList = value 
+			else:
+				sumList = [x + y for x, y in zip(sumList, value)]
+		print(sumList)
+		sumList = np.array(sumList)
+		print("denied " + str(sumList[sumList < 0].size))
+		print("valid " + str(sumList[sumList > 0].size))
+		print("even " + str(sumList[sumList == 0].size))
+
+		
 	def one_class_svm(self):
 		#passdef
 		#OneClassSvm
+
+		
 		arrayLabels = self.getArrayOfLabelData()
 		print(len(arrayLabels))
 		dictClassifiers = {}
-		for label in range(0,len(arrayLabels)):
+		for label in range(1,len(arrayLabels)+1):
 			clf = OneClassSVM()
-			clf.fit(arrayLabels[str(label+1)])
+			clf.fit(arrayLabels[str(label)])
+			outcome = clf.predict(arrayLabels[str(label)])
+			print("\n")
+			print("label " + str("1"))
+			print("denied " + str(outcome[outcome == -1].size))
+			print("valid " + str(outcome[outcome == 1].size))
+			print("\n")
+			outcome = clf.predict(arrayLabels["2"])
+			print("label " + str("2"))
+			print("denied " + str(outcome[outcome == -1].size))
+			print("valid " + str(outcome[outcome == 1].size))
+			print("\n")
+			outcome = clf.predict(arrayLabels["3"])
+			print("label " + str("3"))
+			print("denied " + str(outcome[outcome == -1].size))
+			print("valid " + str(outcome[outcome == 1].size))
+			print("\n")
+			outcome = clf.predict(arrayLabels["4"])
+			print("label " + str("4"))
+			print("denied " + str(outcome[outcome == -1].size))
+			print("valid " + str(outcome[outcome == 1].size))
 			dictClassifiers["svm_Label_" + str(label+1)] = clf
-
 
 		return dictClassifiers
 
         
-	def trainNerualNet(self):
-		x_train, x_test, y_train, y_test = model_selection.train_test_split(self.X, self.Y, 
-																		test_size=0.2, random_state=42)
 
-
-		feature_columns = tf.contrib.learn.infer_real_valued_columns_from_input(self.X)
-		classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[20,40,20],n_classes=5, model_dir= self.tfFiles)
-
-		classifier.fit(x_train, y_train, steps=800)
-		predictions = list(classifier.predict(x_test, as_iterable=True))
-		score = metrics.accuracy_score(y_test, predictions)
-		print('Accuracy: {0:f}'.format(score))
-
-		print("\n\n\n\n\n")
-
-		new_classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[20,40,20],n_classes=5,model_dir= self.tfFiles)
-		predictions = list(new_classifier.predict(x_test, as_iterable=True))
-		score = metrics.accuracy_score(y_test, predictions)
-		print('Accuracy: {0:f}'.format(score))
 
 
 

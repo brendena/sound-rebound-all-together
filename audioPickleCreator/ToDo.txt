@@ -1,0 +1,23 @@
+1.  I have to do make sure all the shared
+dict works across all objects
+
+2.  get my grid cv svm working properly
+
+3.  Add more audio sample into my program
+
+4.  create a class holder for my 3 class
+
+5.  get soft voiting working with each class
+
+6.  Test it.  Make sure it work on the 
+    Item.
+
+7.  Add a section so you can delete Color on 
+    the Webpage.
+
+
+
+
+Brain class 
+    I'v got to do unit testing.
+

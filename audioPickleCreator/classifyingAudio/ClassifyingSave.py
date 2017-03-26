@@ -20,7 +20,7 @@ class ClassifyingSave(ClassifyingBase):
         self.clf1 = RandomForestClassifier(n_estimators=122, criterion="gini")
         self.clf1Type = "Random Forest"
         self.clf1.fit(self.X,self.Y)
-        '''
+        #'''
         self.clf2 = GaussianNB()
         self.clf2Type = "Naiye Bayes"
         self.clf2.fit(self.X,self.Y)
@@ -36,13 +36,17 @@ class ClassifyingSave(ClassifyingBase):
         #so i'm going to have to hard voting in the mean time
         self.eclfSoft = VotingClassifier(estimators=[('rf', self.clf1), ('gnb', self.clf2)], voting='soft')
         self.eclSoftType = "soft voting"
+        self.eclfSoft.fit(self.X,self.Y)
+        
+        print(self.clf1.predict_proba(self.X[0]))
+        print(self.clf2.predict_proba(self.X[0]))
 
         #self.eclfSoft.fit(self.X,self.Y)
-        '''
+        #'''
         saveClassifiers = {}
         saveClassifiers[self.clf1Type] = self.clf1
         #saveClassifiers[self.clf2Type] = self.clf2
-        pickle.dump(saveClassifiers, open("./pickles/TrainedClassifiers.pickle", "wb"))
+        #pickle.dump(saveClassifiers, open("./pickles/TrainedClassifiers.pickle", "wb"))
         print("news stuff")
 
     def saveSVM(self):

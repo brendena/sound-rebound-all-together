@@ -57,6 +57,7 @@ class ClassifyingBase:
         for i in range(0, len(self.Y)):
             label = str(self.Y[i])
             if(label not in data):
+                print(label)
                 data[label] = [self.X[i]]
             else:
                 data[label].append(self.X[i])

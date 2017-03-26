@@ -27,17 +27,19 @@ dataSVM = pickle.load( open(locationOfSVMClassifier + ".pickle", "rb" ) )
 #'''
 
 #'''
-#CC = ClassifyingTraining(dataClassifier["mfcc"], dataClassifier["target"])
+CC = ClassifyingTraining(dataClassifier["mfcc"], dataClassifier["target"])
 #CC.gridSearchCVForest()
 #CC.trainNerualNet()
 #CC.getArrayOfLabelData()
-#CC.saveClassifier()
+CC.setData(dataSVM["rms"],dataSVM["target"])
+#CC.one_class_svm()
+CC.bagginSVM()
 #CC.testSVM()
 #'''
 
 #'''
-CSave = ClassifyingSave(dataClassifier["mfcc"], dataClassifier["target"])
-CSave.saveClassifiers()
+#CSave = ClassifyingSave(dataClassifier["mfcc"], dataClassifier["target"])
+#CSave.saveClassifiers()
 #CSave.setData(dataSVM["zcr"],dataSVM["target"])
 #CSave.saveSVM()
 #'''

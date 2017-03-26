@@ -121,9 +121,8 @@ class audioPickleClass:
 			
 			ySample = y0[start: end]
 			mfccs = librosa.feature.mfcc(y=ySample, sr=sr0,hop_length=hopLength,n_mfcc=20)
-			mfccs = librosa.feature.mfcc(y=ySample, sr=sr0,hop_length=hopLength,n_mfcc=20)
 			melSpec  = librosa.feature.melspectrogram(y=ySample, sr=sr0,hop_length=hopLength,n_mels=128)
-			rms = librosa.feature.rmse(y=ySample,hop_length=hopLength)
+			rms = librosa.feature.rmse(y=ySample, hop_length=hopLength)
 			zcr = librosa.feature.zero_crossing_rate(y=ySample,hop_length=hopLength)
 
 			
@@ -132,19 +131,28 @@ class audioPickleClass:
 			/	to the point where you have a full set.  that 
 			/   whats what the int() for.
 			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
-			numberFrames = int(len(mfccs[0]) / self.numHopLengthPerFrame)
-
-			#print()
-			#print(int(len(mfccs[0])))
-			#print(str(numberFrames))
-			#print("\n\n")
-
+			numberFrames = int(len(rms[0]) / self.numHopLengthPerFrame)
+			
+			'''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			#hack
+			so for some reason rms
+			sometime doesn't want to 
+			do the last value in a 
+			subset when it grouping it value
+			#going to have to learn
+			how RMS is calculated.
+			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
+			'''
+			if(len(rms[0]) != numberFrames):
+				print("error")
+				print(rms)
+				print(zcr)
+			'''
 			mfccs = self.segmentData3d(mfccs,numberFrames)
 			melSpec = self.segmentData3d(melSpec,numberFrames)
 			rms = self.segmentData3d(rms,numberFrames)
 			zcr = self.segmentData3d(zcr,numberFrames)
-			#hack
-			#for i in range(0, numberFrames - 1):
+
 			for i in range(0, numberFrames):
 				#'''
 				data= []
@@ -157,7 +165,6 @@ class audioPickleClass:
 					'target': target
 				})
 				#'''
-
 
 
 	'''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -206,4 +213,4 @@ class audioPickleClass:
 			tmpArray["zcr"].append(tmp["zcr"])
 			tmpArray["rms"].append(tmp["rms"])
 			tmpArray["target"].append(tmp["target"])
-		pickle.dump(tmpArray, open(FilePickle + ".pickle", "wb"))
+		pickle.dump(tmpArray, open(FilePickle + ".pickle", "wb+"))
