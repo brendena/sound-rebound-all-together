@@ -66,7 +66,7 @@ class myFirebase:
         #print("steam_id: " + str(message["stream_id"]))
         
         SID = message['stream_id']
-        
+        print(message)
         path = str(message["path"]).replace("/",  "")
         #if first object
         if(message["path"]  == "/"):

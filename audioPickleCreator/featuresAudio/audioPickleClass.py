@@ -31,6 +31,7 @@ class audioPickleClass:
 		self.labelLocations = self.labelClass._getLabelLocations()
 		self.numHopLengthPerFrame = numHopLengthPerFrame
 		self.hopLengthPerSecond = hopLengthPerSecond
+		self.numberLabels = 0
 
 	def set_HopLength_FrameLength(self, numHopLengthPerFrame=1,hopLengthPerSecond=1):
 		self.numHopLengthPerFrame = numHopLengthPerFrame

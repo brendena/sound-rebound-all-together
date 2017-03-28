@@ -42,7 +42,7 @@ def runServer(managedDict, lock):
     myFlaskFirebase = flaskFirebase()
 
     def updateUsersData():
-        #print("updating all the info")
+        print("updating all the info")
         accounts = myFlaskFirebase.getFlasksAccountInfo()
         lock.acquire()
         managedDict["accounts"] = accounts
@@ -70,6 +70,7 @@ def runServer(managedDict, lock):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
     @socketio.on('add_account')
     def add_account(emailJson):
+        print("add_account")
         error = myFlaskFirebase.addUser(account=emailJson["emailAddress"], password=emailJson["password"])
 
 
@@ -79,6 +80,7 @@ def runServer(managedDict, lock):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
     @socketio.on('remove_account')
     def remove_account(emailJson):
+        print("remove_account")
         myFlaskFirebase.removeUser(emailJson["emailAddress"])
         updateUsersData()
 
@@ -87,18 +89,18 @@ def runServer(managedDict, lock):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
     @socketio.on('connect')
     def test_connect():
+        print("conencted")
         updateUsersData()
-        print("connected\n")
 
 
     @app.route("/", methods=['GET', 'POST'])
     def index():
         updateUsersData()
-        return render_template("./index.html",port=port)
+        return render_template("./index.html")
 
 
 
-    socketio.run(app,port=port)#,debug=True ,host='192.168.1.108'
+    socketio.run(app,port=5000,host="0.0.0.0")#,host="0.0.0.0",debug=True , ssl_context='adhoc'
     print("Running")
 
 if __name__ == "__main__":

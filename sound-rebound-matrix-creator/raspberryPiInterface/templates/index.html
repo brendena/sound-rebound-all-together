@@ -1,6 +1,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width" />
 <title>sound-rebound configuration</title>
 <link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='./css/font-awesome.css') }}">
 <link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='./css/style.css') }}">
@@ -36,15 +37,18 @@
 <script src="{{ url_for('static',filename='./javascript/javascript2.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	var socket = io.connect('http://127.0.0.1:{{port}}');
+	console.log("document is ready")
+	var socket = io.connect('http://localhost:5000');
 	socket.on('connect', function() {
 		socket.send('User has connected!');
+		console.log("trying to connect")
 	});
 	/*///////////////////////////////////////////////////
 	/	on event `allAccounts` add all notification
 	/	to  $("#notifications")
 	///////////////////////////////////////////////////*/
 	socket.on("allAccounts",function(accountsData){
+		console.log("get all Account")
 		/*///////////////////////////////////////////////////
 		/	get the data and clear
 		/	all the notifiacation in $("#notifications")
@@ -82,7 +86,8 @@ $(document).ready(function() {
 		accountEmail = $("#accountEmail").val();
 		accountPassword = $("#password").val();
 		socket.emit("add_account",{"emailAddress": accountEmail, "password":accountPassword});
-		hideForm()
+		hideForm();
+		console.log("submitted form");
 		event.preventDefault();
 	});
 	

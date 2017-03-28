@@ -3,7 +3,7 @@ import multiprocessing
 from producer import producer
 from consumer import consumer
 from multiprocessing import Process, Manager
-#from raspberryPiInterface.index import runServer
+from raspberryPiInterface.index import runServer
 import os, signal, subprocess, time
 
 '''
@@ -28,17 +28,17 @@ if __name__ == '__main__':
 	managedDict = Manager().dict()
 
 	
-
+	runServer(managedDict,lock)
 	#process_server = Process(target=runServer, args=(managedDict,lock))
-	process_producer = producer(toClassifiers, toRaspberryPieQueue)
-	process_consumer = consumer( toRaspberryPieQueue, toClassifiers, managedDict, lock)
+	#process_producer = producer(toClassifiers, toRaspberryPieQueue)
+	#process_consumer = consumer( toRaspberryPieQueue, toClassifiers, managedDict, lock)
 
 	#process_server.start()
-	process_producer.start()
-	process_consumer.start()
+	#process_producer.start()
+	#process_consumer.start()
 
-	process_producer.join()
-	process_consumer.join()
+	#process_producer.join()
+	#process_consumer.join()
 
 	
 	

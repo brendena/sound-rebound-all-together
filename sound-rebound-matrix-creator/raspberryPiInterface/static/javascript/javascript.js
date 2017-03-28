@@ -22,7 +22,13 @@ var clicked = function(element){
     console.log("jesus")
 }
 
+/*
 var hideForm = function(){
     var hiddenDiv = element.getElementsByClassName("accountDetails")[0];
+    hiddenDiv.style.display = "none";
+}
+*/
+var hideForm = function(){
+    var hiddenDiv = document.getElementById("form");
     hiddenDiv.style.display = "none";
 }

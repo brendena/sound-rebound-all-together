@@ -1,19 +1,28 @@
 from featuresAudio.audioPickleClass import audioPickleClass
+from classifyingAudio.SvmStates import SvmStates
+from classifyingAudio.SvmSingleState import SvmSingleState
 from sklearn.model_selection import cross_val_score
-
+from sklearn.model_selection import KFold
+from sklearn import cross_validation
+from sklearn.svm import OneClassSVM
+import pickle
+import random
+import time
 
 
 class ClassifyingOneClassSVM():
     def __init__(self):
-        self._maxHopLength = 16
+        random.seed(time.time())  
         self._maxFrameLength = 16
+        self._maxHopLength = 16
         self._pickleLocation = "./pickles/"
         self.allPossibleCombinations = []
         for FrameL in range(1,self._maxHopLength + 1):
             for HopL in range(1,self._maxFrameLength + 1):
                 if(self.acceptibleFrameToHopeLenght(FrameL,HopL)):
                     self.allPossibleCombinations.append([FrameL,HopL])
-        
+        data = self.loadPickle(1,1)     
+        self.listLabels = self.getListLabelData(data["mfcc"],data["target"])
     
     '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /   i don't want hoplength to be larger
@@ -32,7 +41,7 @@ class ClassifyingOneClassSVM():
            return True
 
     def createPickleLocation(self,frameLength, hopLength): 
-        return  self._pickleLocation + "FrameLength_" + str(frameLength) + "_HopLength_" + str(hopLength) + ".pickle"
+        return  self._pickleLocation + "FrameLength_" + str(frameLength) + "_HopLength_" + str(hopLength)
     
     def createPossiblePickles(self):
         APC = audioPickleClass()
@@ -43,7 +52,7 @@ class ClassifyingOneClassSVM():
 
     def loadPickle(self, frameLength, hopLength):
         pickleLocation = self.createPickleLocation(frameLength, hopLength)
-        return pickle.load( open( locationOfpickleLocationPickleAudioClassifier, "rb" ) )
+        return pickle.load( open( pickleLocation + ".pickle", "rb" ) )
 
     '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /   Classifiers:[
@@ -57,58 +66,111 @@ class ClassifyingOneClassSVM():
     /
     /
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
-    def createSVM(self,classifiers):
-        '''
-        for classifier in classifiers:
-            if(clasifier.typeAudio != )
-                typeAudio = 
+    def createSVM(self,numberItterations,classifiers):
+        #'''
+        #for classifier in classifiers:
+        print(classifiers)
+        if('typeAudio' not in classifiers  ):
+            classifiers["typeAudio"] = ["mfcc","zcr","rms"]
 
-            if(classifier.FrameLeng_HopLength):
-                FrameLEngth_HopLength = self.allPossibleCombinations
-            if(classifer.Bagged then):
-                classifer.classifier =
-        '''
+        if('FrameLeng_HopLength' not in classifiers):
+            classifiers["frame_hopLength"] = self.allPossibleCombinations
+            #if(classifer.Bagged then):
+            #    classifer.classifier = False
+            #if(classifer.numberOfBages):
+        print(classifiers)
+        #'''
         '''
             loop through all these params and come up with a random pair
         '''
-        
-        
-       
-        for i in range(0,1):
-            params = getRandomSVM(classifiers)
-            clf = OneClassSVM(params.params)
-            data = loadPickle(params.frame_hopLength[0], params.frame_hopLength[1])
-            data2 = self.getArrayOfLabelData(data[params.typeAudio])
-            clf.train(data2["1"])
+        svmStates = SvmStates()
+        for i in range(0,numberItterations):
+            svmState = SvmSingleState()
+            params = self.getRandomSVM(classifiers,svmState)
+            clf = OneClassSVM(**svmState.params)
+            fullData = self.loadPickle(svmState.frame_hopLength[0], svmState.frame_hopLength[1])
+            
+
+
+            #get label from pickle data
+            for label in self.listLabels:
+                kf = KFold(n_splits=11)
+                count = 0
+                for train_index, test_index in kf.split(fullData[svmState.typeAudio]):
+                    #split the data up
+                    splitDataX = fullData[svmState.typeAudio][train_index[0]:train_index[-1]]
+                    splitDataY = fullData["target"][train_index[0]:train_index[-1]]
+                    #then get data divided by labels
+                    trainData = self.getArrayOfLabelData(splitDataX, splitDataY)
+
+                    clf.fit(trainData[label])
+                    results = []
+                    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    /   for each label predict the best 
+                    /   predict the results fro each 
+                    /   label 
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
+                    for labelPredict in self.listLabels:
+                        outcome = clf.predict(trainData[labelPredict])
+                        results.append({
+                                "label":labelPredict,
+                                "unvalid": outcome[outcome == -1].size,
+                                "valid": outcome[outcome == 1].size
+                            })
 
 
 
+                    if( label in svmState.results):
+                        svmState.results[label].append(results)
+                    else:
+                        svmState.results[label] = [results]
 
+                    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    /   i want to have a high k fold ratio
+                    /   but don't want to do that many
+                    /   iterations.  So i brake early
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
+                    if(count >= 2):
+                        break
+                    else:  
+                        count = count +1
+                
+
+
+
+            svmStates.states.append(svmState)
+            svmStates.save(self.listLabels)
+            
         '''
         i think i'm going to have to use kfold because i can
         use this kind of method becaseu
         '''
         #scores = cross_val_score(clf, data, iris.target, cv=5)
     
-    def getRandomSVM(classifier):
+    def getRandomSVM(self,classifier,svmState):
         returnParams = {}
-        for param in classifier.params:
-            returnParams[param] = random.choice(classifier.params[param])
+        for param in classifier["params"]:
+            returnParams[param] = random.choice(classifier["params"][param])
+        svmState.params = returnParams
+        svmState.typeAudio = random.choice(classifier["typeAudio"])
+        svmState.frame_hopLength = random.choice(classifier["frame_hopLength"])
 
-        return{
-            "params": returnParams,
-            "typeAudio": random.choice(classifier.typeAudio),
-            "frame_hopLength": random.choice(classifier.frame_hopLength)   
-        }
 
         
-    def getArrayOfLabelData(self):
+    def getArrayOfLabelData(self, X, Y):
         data = {}
-        for i in range(0, len(self.Y)):
-            label = str(self.Y[i])
+        for i in range(0, len(Y)):
+            label = str(Y[i])
             if(label not in data):
-                print(label)
-                data[label] = [self.X[i]]
+                data[label] = [X[i]]
             else:
-                data[label].append(self.X[i])
+                data[label].append(X[i])
+        return data
+
+    def getListLabelData(self, X, Y):
+        data = []
+        for i in range(0, len(Y)):
+            label = str(Y[i])
+            if(label not in data):
+                data.extend(str(Y[i]))
         return data
