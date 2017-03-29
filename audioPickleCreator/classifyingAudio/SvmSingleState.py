@@ -5,6 +5,8 @@ class SvmSingleState():
 		self.params = {}
 		self.typeAudio = []
 		self.frame_hopLength = []
+		self.bagged = []
+		self.baggedNumber = []
 		self.results = {}
 		self.finalResults = []
 

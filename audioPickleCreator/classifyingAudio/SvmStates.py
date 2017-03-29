@@ -42,16 +42,11 @@ class SvmStates():
         for resultsLabel in self.states[0].finalResults:
             self.largestValue[self.states[0].finalResults[resultsLabel]['label']] = self.states[0]
 
-            print( self.states[0].finalResults[resultsLabel]['finalScore'])
         
         for i in range(0, len(self.states)):
             for label in self.labels:
   
                 if(self.largestValue[label].finalResults[label]['finalScore'] < self.states[i].finalResults[label]['finalScore']):
-                    print(self.largestValue[label].finalResults[label]['finalScore'])
-                    print(self.states[i].finalResults[label]['finalScore'])
-                    print(label)
-                    print("\n")
                     self.largestValue[label] = self.states[i]
 
         for value in self.largestValue:

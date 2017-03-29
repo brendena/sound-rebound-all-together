@@ -1,10 +1,12 @@
 from featuresAudio.audioPickleClass import audioPickleClass
+from classifyingAudio.BaggedSvmOneClass import BaggedSvmOneClass
 from classifyingAudio.SvmStates import SvmStates
 from classifyingAudio.SvmSingleState import SvmSingleState
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 from sklearn import cross_validation
 from sklearn.svm import OneClassSVM
+
 import pickle
 import random
 import time
@@ -13,14 +15,16 @@ import time
 class ClassifyingOneClassSVM():
     def __init__(self):
         random.seed(time.time())  
-        self._maxFrameLength = 16
-        self._maxHopLength = 16
+        self._maxFrameLength = 1 
+        self._maxHopLength = 1
         self._pickleLocation = "./pickles/"
         self.allPossibleCombinations = []
         for FrameL in range(1,self._maxHopLength + 1):
             for HopL in range(1,self._maxFrameLength + 1):
                 if(self.acceptibleFrameToHopeLenght(FrameL,HopL)):
                     self.allPossibleCombinations.append([FrameL,HopL])
+
+    def getLabelSize(self):
         data = self.loadPickle(1,1)     
         self.listLabels = self.getListLabelData(data["mfcc"],data["target"])
     
@@ -69,7 +73,6 @@ class ClassifyingOneClassSVM():
     def createSVM(self,numberItterations,classifiers):
         #'''
         #for classifier in classifiers:
-        print(classifiers)
         if('typeAudio' not in classifiers  ):
             classifiers["typeAudio"] = ["mfcc","zcr","rms"]
 
@@ -78,7 +81,6 @@ class ClassifyingOneClassSVM():
             #if(classifer.Bagged then):
             #    classifer.classifier = False
             #if(classifer.numberOfBages):
-        print(classifiers)
         #'''
         '''
             loop through all these params and come up with a random pair
@@ -86,8 +88,11 @@ class ClassifyingOneClassSVM():
         svmStates = SvmStates()
         for i in range(0,numberItterations):
             svmState = SvmSingleState()
-            params = self.getRandomSVM(classifiers,svmState)
-            clf = OneClassSVM(**svmState.params)
+            self.getRandomSVM(classifiers,svmState)
+            if(svmState.bagged == True):
+                clf = BaggedSvmOneClass(svmState.params, svmState.baggedNumber)
+            else:
+                clf = OneClassSVM(**svmState.params)
             fullData = self.loadPickle(svmState.frame_hopLength[0], svmState.frame_hopLength[1])
             
 
@@ -141,11 +146,6 @@ class ClassifyingOneClassSVM():
             svmStates.states.append(svmState)
             svmStates.save(self.listLabels)
             
-        '''
-        i think i'm going to have to use kfold because i can
-        use this kind of method becaseu
-        '''
-        #scores = cross_val_score(clf, data, iris.target, cv=5)
     
     def getRandomSVM(self,classifier,svmState):
         returnParams = {}
@@ -154,6 +154,9 @@ class ClassifyingOneClassSVM():
         svmState.params = returnParams
         svmState.typeAudio = random.choice(classifier["typeAudio"])
         svmState.frame_hopLength = random.choice(classifier["frame_hopLength"])
+        svmState.bagged = random.choice(classifier['bagged'])
+        svmState.baggedNumber = random.choice(classifier["baggedNumber"])
+        print(returnParams)
 
 
         
