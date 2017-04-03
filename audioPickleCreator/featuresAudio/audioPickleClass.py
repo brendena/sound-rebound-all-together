@@ -36,6 +36,7 @@ class audioPickleClass:
 	def set_HopLength_FrameLength(self, numHopLengthPerFrame=1,hopLengthPerSecond=1):
 		self.numHopLengthPerFrame = numHopLengthPerFrame
 		self.hopLengthPerSecond = hopLengthPerSecond
+		self.listAudioObject = []
 	
 
 
@@ -165,6 +166,14 @@ class audioPickleClass:
 					'zcr' : zcr[i],
 					'target': target
 				})
+				if(len(mfccs[i]) != self.numHopLengthPerFrame * 20):
+					raise NameError('broke to early, not all data is fit')
+				
+				elif(len(rms[i]) != self.numHopLengthPerFrame):
+					raise NameError('broke to early, not all data is fit')
+				
+				elif(len(zcr[i]) != self.numHopLengthPerFrame):
+					raise NameError('broke to early, not all data is fit')
 				#'''
 
 

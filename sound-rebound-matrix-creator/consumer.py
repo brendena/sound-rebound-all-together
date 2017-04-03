@@ -31,7 +31,7 @@ class consumer(multiprocessing.Process):
             #print(self.managedDict)
             if (self.queueGetAudio.empty()):
                 print("the queue is empty")
-                break;
+                break
                 1+1
             else :
                 item = self.queueGetAudio.get()

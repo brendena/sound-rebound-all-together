@@ -52,6 +52,9 @@ class SvmStates():
         for value in self.largestValue:
             print(value)
             print(self.largestValue[value].finalResults[value]['finalScore'])
+            print(self.largestValue[value].params)
+            print(self.largestValue[value].typeAudio)
+            print(self.largestValue[value].frame_hopLength)
 
 
     def caluculateAverage(self, results,trainedLabel): 

@@ -9,4 +9,5 @@ class SvmSingleState():
 		self.baggedNumber = []
 		self.results = {}
 		self.finalResults = []
+		self.classifier = ""
 

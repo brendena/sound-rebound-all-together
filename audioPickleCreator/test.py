@@ -8,9 +8,9 @@ locationOfSVMClassifier = "./pickles/audioSVM"
 APC = audioPickleClass(4,2)
 
 '''
-APC.set_HopLength_FrameLength(1,1)
+APC.set_HopLength_FrameLength(2,2)
 APC.addLabelsToClassify()
-APC.createPickle(locationOfPickleAudioClassifier)
+APC.createPickle("./pickles/testing")
 #'''
 
 '''
@@ -22,11 +22,15 @@ APC.createPickle(locationOfSVMClassifier)
 
 
 #'''
-dataClassifier = pickle.load( open( locationOfPickleAudioClassifier + ".pickle", "rb" ) )
-dataSVM = pickle.load( open(locationOfSVMClassifier + ".pickle", "rb" ) )
-#'''
+dataClassifier = pickle.load( open( "./pickles/FrameLength_2_HopLength_2.pickle", "rb" ) )
+#dataSVM = pickle.load( open(locationOfSVMClassifier + ".pickle", "rb" ) )
+print(dataClassifier["mfcc"][1])
+for i in dataClassifier["mfcc"]:
+    print(len(i))
 
 #'''
+
+'''
 CC = ClassifyingTraining(dataClassifier["mfcc"], dataClassifier["target"])
 #CC.gridSearchCVForest()
 #CC.trainNerualNet()

@@ -52,6 +52,7 @@ class ClassifyingBase:
             self.Y = np.asarray(y)
             #self.X = np.array(x)
             #self.Y = np.array(y)
+            
     def getArrayOfLabelData(self,type="classifier"):
         data = {}
         for i in range(0, len(self.Y)):

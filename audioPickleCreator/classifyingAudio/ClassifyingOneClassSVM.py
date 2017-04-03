@@ -11,19 +11,28 @@ import pickle
 import random
 import time
 
+'''********************************************************
+/   Purpose:
+/       this class find the best given oneclass svm
+/        based on a given parameters. 
+********************************************************'''
 
 class ClassifyingOneClassSVM():
     def __init__(self):
         random.seed(time.time())  
-        self._maxFrameLength = 1 
-        self._maxHopLength = 1
+        self._maxFrameLength = 16
+        self._maxHopLength = 16
         self._pickleLocation = "./pickles/"
         self.allPossibleCombinations = []
         for FrameL in range(1,self._maxHopLength + 1):
             for HopL in range(1,self._maxFrameLength + 1):
                 if(self.acceptibleFrameToHopeLenght(FrameL,HopL)):
                     self.allPossibleCombinations.append([FrameL,HopL])
-
+    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /   you need labels for looping in functions
+    /   createSVM()
+    /   self.listLabels = ["1", "2"]
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
     def getLabelSize(self):
         data = self.loadPickle(1,1)     
         self.listLabels = self.getListLabelData(data["mfcc"],data["target"])
@@ -56,6 +65,7 @@ class ClassifyingOneClassSVM():
 
     def loadPickle(self, frameLength, hopLength):
         pickleLocation = self.createPickleLocation(frameLength, hopLength)
+       
         return pickle.load( open( pickleLocation + ".pickle", "rb" ) )
 
     '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -63,30 +73,34 @@ class ClassifyingOneClassSVM():
     /        classifier: # if prefined then it skips the rest of this stuff
     /        params: 
     /        typeAudio:
-    /        FrameLength_HopLength:
-    /        Bagged: true or false
+    /        frameLength_HopLength:
+    /        bagged: true or false
+    /        baggedNumber: >= 2 
     /     ]
-    /
-    /
-    /
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
     def createSVM(self,numberItterations,classifiers):
-        #'''
+
         #for classifier in classifiers:
         if('typeAudio' not in classifiers  ):
             classifiers["typeAudio"] = ["mfcc","zcr","rms"]
-
-        if('FrameLeng_HopLength' not in classifiers):
+        if('frame_hopLength' not in classifiers):
             classifiers["frame_hopLength"] = self.allPossibleCombinations
-            #if(classifer.Bagged then):
-            #    classifer.classifier = False
-            #if(classifer.numberOfBages):
-        #'''
-        '''
-            loop through all these params and come up with a random pair
-        '''
+        if('bagged' not in classifiers):
+            classifiers["bagged"] = [False]
+        if('baggedNumber' not in classifiers):
+            classifiers["baggedNumber"] = [3]
+        if('params' not in classifiers):
+            classifiers["params"] = {}
+        '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        /    loop through all these params and
+        /     come up with a random pair
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
         svmStates = SvmStates()
         for i in range(0,numberItterations):
+            '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            /   set all the svmStates Values and create
+            /   either a standord classifier or a bagged one
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
             svmState = SvmSingleState()
             self.getRandomSVM(classifiers,svmState)
             if(svmState.bagged == True):
@@ -94,20 +108,21 @@ class ClassifyingOneClassSVM():
             else:
                 clf = OneClassSVM(**svmState.params)
             fullData = self.loadPickle(svmState.frame_hopLength[0], svmState.frame_hopLength[1])
-            
-
-
-            #get label from pickle data
+            '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            /  loop through all each label and train 
+            /  a classifier on a KFold split 
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
             for label in self.listLabels:
                 kf = KFold(n_splits=11)
                 count = 0
                 for train_index, test_index in kf.split(fullData[svmState.typeAudio]):
-                    #split the data up
+                    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    /    split the data by the Kfold and get the 
+                    /    the specific data based on the label
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
                     splitDataX = fullData[svmState.typeAudio][train_index[0]:train_index[-1]]
                     splitDataY = fullData["target"][train_index[0]:train_index[-1]]
-                    #then get data divided by labels
                     trainData = self.getArrayOfLabelData(splitDataX, splitDataY)
-
                     clf.fit(trainData[label])
                     results = []
                     '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,7 +139,9 @@ class ClassifyingOneClassSVM():
                             })
 
 
-
+                    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    /    add results to the larger results object
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
                     if( label in svmState.results):
                         svmState.results[label].append(results)
                     else:
@@ -142,11 +159,18 @@ class ClassifyingOneClassSVM():
                 
 
 
-
+            '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            /   add the singleSvmState and save the list
+            /   so you can use it latter.
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
             svmStates.states.append(svmState)
             svmStates.save(self.listLabels)
             
-    
+    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /   set the paramiters randomly, so you can
+    /   test a wide veriety of parameters, without
+    /   having to test them all.
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
     def getRandomSVM(self,classifier,svmState):
         returnParams = {}
         for param in classifier["params"]:
@@ -159,7 +183,10 @@ class ClassifyingOneClassSVM():
         print(returnParams)
 
 
-        
+    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /   returns a dictionary of data 
+    /   based off the label
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~''' 
     def getArrayOfLabelData(self, X, Y):
         data = {}
         for i in range(0, len(Y)):
@@ -169,7 +196,9 @@ class ClassifyingOneClassSVM():
             else:
                 data[label].append(X[i])
         return data
-
+    '''~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /   return a list of labels
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'''
     def getListLabelData(self, X, Y):
         data = []
         for i in range(0, len(Y)):
