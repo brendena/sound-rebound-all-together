@@ -3,8 +3,9 @@ import multiprocessing
 from producer import producer
 from consumer import consumer
 from multiprocessing import Process, Manager
-from raspberryPiInterface.index import runServer
+from raspberryPiInterface.index import myServer
 import os, signal, subprocess, time
+import pickle
 
 '''
 this is the final example
@@ -24,18 +25,19 @@ if __name__ == '__main__':
 	
 	toClassifiers = multiprocessing.Queue()
 	toRaspberryPieQueue = multiprocessing.Queue()
-	lock = multiprocessing.Lock()
-	managedDict = Manager().dict()
+	accountPickle = "./account.pickle"
+	pickle.dump({},open(accountPickle, "wb+" ) )
+	myServer = myServer(accountPickle)
 
-	
-	runServer(managedDict,lock)
-	#process_server = Process(target=runServer, args=(managedDict,lock))
+
+
+	process_server = Process(target=myServer.runServer, args=())
 	#process_producer = producer(toClassifiers, toRaspberryPieQueue)
-	#process_consumer = consumer( toRaspberryPieQueue, toClassifiers, managedDict, lock)
+	process_consumer = consumer( toRaspberryPieQueue, toClassifiers, accountPickle)
 
-	#process_server.start()
+	process_server.start()
 	#process_producer.start()
-	#process_consumer.start()
+	process_consumer.start()
 
 	#process_producer.join()
 	#process_consumer.join()

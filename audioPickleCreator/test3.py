@@ -48,7 +48,7 @@ OC_SVM.createSVM(100,{
 
 
 
-#'''
+'''
 svm = SvmStates()
 svm.load()
 svm.getHighestAverage()

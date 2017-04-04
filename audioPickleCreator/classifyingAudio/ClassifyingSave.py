@@ -9,7 +9,7 @@ import numpy as np
 from classifyingAudio.ClassifyingBase import ClassifyingBase
 
 class ClassifyingSave(ClassifyingBase):
-    def __init__(self,X,Y):
+    def __init__(self):
         ClassifyingBase.__init__(self)
         self.setData(X,Y)
         self.classifierPickleFile = "classifiers.pickle"
@@ -17,34 +17,17 @@ class ClassifyingSave(ClassifyingBase):
         np.random.seed(123)
 
     def saveClassifiers(self):
-        self.clf1 = RandomForestClassifier(n_estimators=122, criterion="gini")
+        dataClassifier = pickle.load( open( "./pickles/FrameLength_3_HopLength_6.pickle", "rb" ) )
+        self.clf1 = RandomForestClassifier(n_estimators=151, criterion="gini")
         self.clf1Type = "Random Forest"
-        self.clf1.fit(self.X,self.Y)
+        self.clf1.fit(dataClassifier["mfcc"],dataClassifier["target"])
         #'''
+        dataClassifier = pickle.load( open( "./pickles/FrameLength_10_HopLength_10.pickle", "rb" ) )
         self.clf2 = GaussianNB()
         self.clf2Type = "Naiye Bayes"
-        self.clf2.fit(self.X,self.Y)
+        self.clf2.fit(dataClassifier["mfcc"],dataClassifier["target"])
 
 
 
-    def saveSVM(self):
-        saveSVM = {}
-        saveSVM["svm"] = self.one_class_svm() 
-        pickle.dump(saveSVM, open("./pickles/TrainedSVM.pickle", "wb"))
 
 
-    def one_class_svm(self):
-        #passdef
-        #OneClassSvm
-        arrayLabels = self.getArrayOfLabelData()
-        print(len(arrayLabels))
-        dictClassifiers = {}
-        for label in range(1,len(arrayLabels)+1):
-            clf = OneClassSVM()
-            print("svm_Label_" + str(label))
-            clf.fit(arrayLabels[str(label)])
-            
-            dictClassifiers["svm_Label_" + str(label)] = clf
-
-
-        return dictClassifiers

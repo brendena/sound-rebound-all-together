@@ -115,13 +115,7 @@ class flaskFirebase:
                 "notifications": listNotification
             })
             #'''
-        print("\n\n\n")
-        print(returnArray)
-        print("\n\n\n")
-
-        print("\n\n\n")
-        print(self.myFirebase.allUsersData)
-        print("\n\n\n")    
+  
 
         return returnArray
 

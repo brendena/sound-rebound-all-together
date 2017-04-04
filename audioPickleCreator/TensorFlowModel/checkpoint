@@ -1,3 +1,2 @@
-model_checkpoint_path: "model.ckpt-800"
-all_model_checkpoint_paths: "model.ckpt-1"
-all_model_checkpoint_paths: "model.ckpt-800"
+model_checkpoint_path: "/home/brendena/Downloads/sound-rebound-all-together/audioPickleCreator/TensorFlowModel/my_model.model"
+all_model_checkpoint_paths: "/home/brendena/Downloads/sound-rebound-all-together/audioPickleCreator/TensorFlowModel/my_model.model"
