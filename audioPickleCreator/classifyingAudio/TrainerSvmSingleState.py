@@ -16,7 +16,7 @@ class TrainerSvmSingleState():
             svmState.classifier = OneClassSVM(**svmState.params)
         dataUnorganized = self.loadPickle(svmState.frame_hopLength[0],svmState.frame_hopLength[1])
         dataOrganized = self.getArrayOfLabelData(dataUnorganized[svmState.typeAudio], dataUnorganized["target"])
-        svmState.classifier.fit(dataOrganized["1"])
+        svmState.classifier.fit(dataOrganized[svmState.label])
 
 
 

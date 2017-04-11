@@ -1,4 +1,5 @@
 from classifyingAudio.softVotingSvm.Composite import Composite
+import numpy as np
 import librosa
 
 '''*************************************************************
@@ -56,8 +57,12 @@ class SoftVotingSvm(Composite):
                     zcr = librosa.feature.zero_crossing_rate(y=data,hop_length=hopLength)
                     predictingData[audioNeeded][numberHopes] = zcr
 
-        self.predict(predictingData)
+        return self.predict(predictingData)
+
+
+
     def predict(self, data):
+        results = []
         for classifier in self.listClassifiers:
             if(type(classifier) == SoftVotingSvm):
                 classifier.getNeededItems()
@@ -65,14 +70,37 @@ class SoftVotingSvm(Composite):
                 #self.listObjects[classifier.typeAudio] = classifier.frame_hopLength
                 
                 asdf = self.segmentData(data[classifier.typeAudio][classifier.frame_hopLength[1]],classifier.frame_hopLength[0])
-                #print(asdf)
-                #print(len(asdf))
-                print(classifier.classifier.predict(asdf)) 
-                print("\n")
+                print(asdf)
+                print(str(classifier.typeAudio) + "  " +str(classifier.frame_hopLength[1]) + " " + str(classifier.frame_hopLength[0]) + "\n")
+                results.append(classifier.classifier.predict(asdf, probability=True))
+
+        finalResults = []
+        print(results)
+        for i in results:
+            finalResults.append([sum(i[i <= 0]), sum(i[i >= 1])])
+        print(finalResults)
+        failedPercent = 0
+        successPercent = 0
+        for i in range(0,len(finalResults)):
+            failedPercent = failedPercent +  finalResults[i][0]
+            successPercent = successPercent + finalResults[i][1]
+        
+        return {"failed": failedPercent,"passed": successPercent}
 
     def segmentData(self,data,numHopLengthPerFrame):
         allData = []
-        for sectionNum in range(0,int(len(data[0])/numHopLengthPerFrame)):
+        #hack sometime with rms
+        # it doesn't allwas get the full value
+        # so i'm just going to pad it
+
+        if(len(data[0]) < numHopLengthPerFrame):
+            newArray = []
+            for frame in data:
+                newArray.extend(frame)
+            newArray.append(data[0][-1])
+            return [newArray]
+
+        for sectionNum in range(0,int( (len(data[0])) /numHopLengthPerFrame)):
                 newArray = []
                 for frame in data:
                     currentFrameNumber = sectionNum*numHopLengthPerFrame

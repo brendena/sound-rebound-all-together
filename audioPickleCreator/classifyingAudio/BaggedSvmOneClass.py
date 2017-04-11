@@ -43,6 +43,8 @@ class BaggedSvmOneClass():
 
     def predict(self, data, probability=False):
         sumList = []
+        print("data")
+        print(len(data))
         for svm in self.listSvmClasses:
             value = svm.predict(data)
             if(sumList == []):

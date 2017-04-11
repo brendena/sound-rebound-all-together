@@ -15,6 +15,7 @@ class SvmStates():
         self.states = []
         self.labels = []
         self.largestValue = {}
+        self.saveFile = open("./bestClassifiers", "a+")
 
 
     def save(self, labels):
@@ -50,12 +51,22 @@ class SvmStates():
                     self.largestValue[label] = self.states[i]
 
         for value in self.largestValue:
-            print(value)
+
+            self.saveFile.write("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+            print(str(value))
+            self.saveFile.write(str(value)+ "\n")
             print(self.largestValue[value].finalResults[value]['finalScore'])
             print(self.largestValue[value].params)
             print(self.largestValue[value].typeAudio)
             print(self.largestValue[value].frame_hopLength)
-
+            print(self.largestValue[value].baggedNumber)
+            self.saveFile.write("finalScore : " + str(self.largestValue[value].finalResults[value]['finalScore']) + "\n")
+            self.saveFile.write("params : " + str(self.largestValue[value].params)+ "\n")
+            self.saveFile.write("typeAudio : " + str(self.largestValue[value].typeAudio)+ "\n")
+            self.saveFile.write("frame_hoplength : " + str(self.largestValue[value].frame_hopLength)+ "\n")
+            self.saveFile.write("baggedNumber : " + str(self.largestValue[value].baggedNumber)+ "\n\n")
+            print("\n")
+        self.saveFile.close()
 
     def caluculateAverage(self, results,trainedLabel): 
         valid = 0

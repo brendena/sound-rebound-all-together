@@ -10,7 +10,7 @@ from sklearn import model_selection
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import BaggingClassifier
 from sklearn.model_selection import KFold
-import tflearn as tf
+#import tflearn as tf
 
 import numpy as np
 
