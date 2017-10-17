@@ -4,6 +4,8 @@
 
 sound-rebound-all-together is a combination of lots of smaller projects put together.
 
+[sound-rebound-ui](https://github.com/brendena/sound-rebound)
+
 [sound-rebound-NN-creation](https://github.com/brendena/sound-rebound-NN-creation)
 
 [sound-rebound-matrix-creator](https://github.com/brendena/sound-rebound-matrix-creator)
